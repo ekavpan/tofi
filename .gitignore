@@ -1,0 +1,63 @@
+# Environment and Virtual Environment
+.env
+venv/
+env/
+.venv/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+bin/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.project
+.pydevproject
+
+# Logs and Databases
+*.log
+*.sqlite3
+*.db
+
+# Temporary files
+.DS_Store
+_temp_*
+*.tmp
+*.temp
+*.bak
+
+# Testing
+.coverage
+.tox/
+.pytest_cache/
+htmlcov/
+.hypothesis/
+
+# Documentation
+docs/_build/
+site/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# OCR and Image Processing
+_temp_ocr.*
+*_processed.png
