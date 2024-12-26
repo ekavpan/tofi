@@ -1,0 +1,24 @@
+COMPREHENSIVE METABOLIC PANEL
+Patient Name: Alex Johnson
+Date: 2024-12-20
+Lab ID: LAB112233
+
+TEST NAME                   RESULT    REFERENCE RANGE    FLAG
+--------                   -------   ---------------    ----
+GLUCOSE                    120 mg/dL   70-99           HIGH
+CREATININE                0.8 mg/dL    0.7-1.3         NORMAL
+ALT                       80 U/L       7-56            NORMAL
+TOTAL CHOLESTEROL         195 mg/dL    <200            NORMAL
+HDL CHOLESTEROL           50 mg/dL     >40             NORMAL
+THYROID STIMULATING
+HORMONE (TSH)             2.5 mIU/L    0.4-4.0         NORMAL
+
+COMPLETE BLOOD COUNT
+HEMOGLOBIN                12.0 g/dL    13.5-17.5       LOW
+WHITE BLOOD CELLS         11.5 K/uL    4.5-11.0        HIGH
+PLATELETS                 145 K/uL     150-450         LOW
+
+Additional Notes:
+- Patient reports no symptoms
+- Family history of anemia
+- Current medications: Iron supplements

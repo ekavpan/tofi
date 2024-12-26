@@ -1,0 +1,24 @@
+COMPREHENSIVE METABOLIC PANEL
+Patient Name: Maria Gonzalez
+Date: 2024-12-20
+Lab ID: LAB223344
+
+TEST NAME                   RESULT    REFERENCE RANGE    FLAG
+--------                   -------   ---------------    ----
+GLUCOSE                    70 mg/dL    70-99           LOW
+CREATININE                2.0 mg/dL    0.7-1.3         HIGH
+ALT                       30 U/L       7-56            NORMAL
+TOTAL CHOLESTEROL         250 mg/dL    <200            HIGH
+HDL CHOLESTEROL           60 mg/dL     >40             NORMAL
+THYROID STIMULATING
+HORMONE (TSH)             8.0 mIU/L    0.4-4.0         HIGH
+
+COMPLETE BLOOD COUNT
+HEMOGLOBIN                15.0 g/dL    13.5-17.5       NORMAL
+WHITE BLOOD CELLS         6.5 K/uL     4.5-11.0        NORMAL
+PLATELETS                 300 K/uL     150-450         NORMAL
+
+Additional Notes:
+- Patient reports severe fatigue
+- Family history of kidney disease
+- Current medications: None

@@ -1,0 +1,24 @@
+COMPREHENSIVE METABOLIC PANEL
+Patient Name: John Doe
+Date: 2024-12-18
+Lab ID: LAB987654
+
+TEST NAME                   RESULT    REFERENCE RANGE    FLAG
+--------                   -------   ---------------    ----
+GLUCOSE                    145 mg/dL   70-99           HIGH
+CREATININE                1.1 mg/dL    0.7-1.3         LOW
+ALT                       60 U/L       7-56            HIGH
+TOTAL CHOLESTEROL         210 mg/dL    <200            HIGH
+HDL CHOLESTEROL           38 mg/dL     >40             LOW
+THYROID STIMULATING
+HORMONE (TSH)             6.0 mIU/L    0.4-4.0         HIGH
+
+COMPLETE BLOOD COUNT
+HEMOGLOBIN                14.0 g/dL    13.5-17.5       NORMAL
+WHITE BLOOD CELLS         13.0 K/uL    4.5-11.0        HIGH
+PLATELETS                 150 K/uL     150-450         NORMAL
+
+Additional Notes:
+- Patient reports fatigue and occasional dizziness
+- No family history of chronic conditions
+- Current medications: None

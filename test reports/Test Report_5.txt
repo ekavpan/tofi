@@ -1,0 +1,24 @@
+COMPREHENSIVE METABOLIC PANEL
+Patient Name: Kevin Lee
+Date: 2024-12-21
+Lab ID: LAB334455
+
+TEST NAME                   RESULT    REFERENCE RANGE    FLAG
+--------                   -------   ---------------    ----
+GLUCOSE                    200 mg/dL   70-99           HIGH
+CREATININE                0.6 mg/dL    0.7-1.3         LOW
+ALT                       40 U/L       7-56            NORMAL
+TOTAL CHOLESTEROL         180 mg/dL    <200            NORMAL
+HDL CHOLESTEROL           30 mg/dL     >40             LOW
+THYROID STIMULATING
+HORMONE (TSH)             1.0 mIU/L    0.4-4.0         NORMAL
+
+COMPLETE BLOOD COUNT
+HEMOGLOBIN                16.0 g/dL    13.5-17.5       NORMAL
+WHITE BLOOD CELLS         9.5 K/uL     4.5-11.0        NORMAL
+PLATELETS                 500 K/uL     150-450         
+
+Additional Notes:
+- Patient reports frequent urination and extreme thirst
+- Family history of diabetes
+- Current medications: None

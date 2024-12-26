@@ -1,0 +1,142 @@
+{
+    "patient_info_captured": true,
+    "salutation": "",
+    "first_name": "",
+    "middle_name": "",
+    "last_name": "",
+    "patient_contact_information": {
+        "mobile": "",
+        "alternate_mobile": "",
+        "home_phone": "",
+        "work_phone": "",
+        "email": "",
+        "emergency_contact": {
+            "name": "",
+            "relationship": "",
+            "phone": ""
+        },
+        "address": {
+            "street": "",
+            "city": "",
+            "state": "",
+            "postal_code": "",
+            "country": ""
+        }
+    },
+    "date_of_birth": "",
+    "age": "",
+    "gender": "",
+    "organization_information": {
+        "name": "",
+        "branch": "",
+        "contact": {
+            "phone": "",
+            "email": "",
+            "website": ""
+        },
+        "address": {
+            "street": "",
+            "city": "",
+            "state": "",
+            "postal_code": "",
+            "country": ""
+        },
+        "license_number": "",
+        "accreditation": ""
+    },
+    "document_type": "",
+    "document_date": "",
+    "report_summary": {
+        "overview": "",
+        "document_specific_details": {
+            "lab_report": {
+                "tests": [
+                    {
+                        "test_name": "",
+                        "parameter": "",
+                        "result": "",
+                        "unit": "",
+                        "reference_range": "",
+                        "interpretation": "",
+                        "is_abnormal": false,
+                        "clinical_significance": ""
+                    }
+                ],
+                "sample_collection_date": "",
+                "sample_type": "",
+                "methodology": ""
+            },
+            "scan_report": {
+                "scan_type": "",
+                "body_part": "",
+                "technique_used": "",
+                "contrast_used": false,
+                "findings": {
+                    "normal_observations": [],
+                    "abnormal_observations": [],
+                    "measurements": [],
+                    "anatomical_details": ""
+                },
+                "impression": "",
+                "limitations": ""
+            },
+            "prescription": {
+                "medications": [
+                    {
+                        "name": "",
+                        "dosage": "",
+                        "frequency": "",
+                        "duration": "",
+                        "intake_instructions": "",
+                        "special_instructions": "",
+                        "timing": "",
+                        "relation_to_food": ""
+                    }
+                ],
+                "diet_instructions": "",
+                "lifestyle_modifications": "",
+                "follow_up_date": ""
+            },
+            "invoice": {
+                "invoice_number": "",
+                "bill_date": "",
+                "items": [
+                    {
+                        "description": "",
+                        "quantity": 0,
+                        "unit_price": 0.0,
+                        "discount": 0.0,
+                        "tax": 0.0,
+                        "total": 0.0
+                    }
+                ],
+                "subtotal": 0.0,
+                "total_discount": 0.0,
+                "total_tax": 0.0,
+                "grand_total": 0.0,
+                "payment_method": "",
+                "payment_status": ""
+            }
+        },
+        "diagnosis": "",
+        "clinical_history": "",
+        "recommendations": "",
+        "detailed_findings": ""
+    },
+    "observations": {
+        "primary_observations": [],
+        "secondary_observations": [],
+        "incidental_findings": [],
+        "measurements": [],
+        "technical_details": {
+            "image_quality": "",
+            "positioning": "",
+            "artifacts": [],
+            "limitations": ""
+        }
+    },
+    "action_items": [],
+    "next_steps": [],
+    "needs_attention": [],
+    "care_requirements": []
+}

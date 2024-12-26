@@ -1,0 +1,24 @@
+COMPREHENSIVE METABOLIC PANEL
+Patient Name: Jane Smith
+Date: 2024-12-19
+Lab ID: LAB654321
+
+TEST NAME                   RESULT    REFERENCE RANGE    FLAG
+--------                   -------   ---------------    ----
+GLUCOSE                    95 mg/dL    70-99           NORMAL
+CREATININE                1.5 mg/dL    0.7-1.3         HIGH
+ALT                       50 U/L       7-56            HIGH
+TOTAL CHOLESTEROL         180 mg/dL    <200            NORMAL
+HDL CHOLESTEROL           45 mg/dL     >40             HIGH
+THYROID STIMULATING
+HORMONE (TSH)             3.5 mIU/L    0.4-4.0         NORMAL
+
+COMPLETE BLOOD COUNT
+HEMOGLOBIN                13.0 g/dL    13.5-17.5       LOW
+WHITE BLOOD CELLS         10.5 K/uL    4.5-11.0        NORMAL
+PLATELETS                 135 K/uL     150-450         LOW
+
+Additional Notes:
+- Patient reports mild headache and weakness
+- Family history of thyroid issues
+- Current medications: Multivitamins
