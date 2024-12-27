@@ -1,4 +1,4 @@
-# Medical Report Analyzer
+# Medical Report Analyzer-Impacted Body System Classification
 
 A Streamlit-based application that analyzes medical reports (PDF, images) using LLM to identify abnormal values and their clinical significance.
 
