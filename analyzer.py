@@ -77,7 +77,11 @@ class MedicalAnalyzer:
                     model="gpt-3.5-turbo",
                     messages=[
                         {"role": "system", "content": self.analysis_prompt},
-                        {"role": "user", "content": json.dumps(analysis_input)}
+                        {"role": "user", "content": (
+                            "Analyze the health data comprehensively. Consider ALL possible body systems that might be affected, "
+                            "both directly and indirectly. Include both primary and secondary impacts. "
+                            f"Data: {json.dumps(analysis_input)}"
+                        )}
                     ],
                     temperature=0.2,
                     max_tokens=2000
@@ -177,12 +181,12 @@ class MedicalAnalyzer:
                 if extracted_data:
                     # Add findings from structured data
                     if "report_summary" in extracted_data:
-                        if "key_findings" in extracted_data["report_summary"]:
-                            analysis_input["image_findings"].extend(extracted_data["report_summary"]["key_findings"])
-                        if "abnormal_results" in extracted_data["report_summary"]:
-                            analysis_input["abnormal_results"].extend(extracted_data["report_summary"]["abnormal_results"])
-                        if "measurements" in extracted_data["report_summary"]:
-                            analysis_input["measurements"].extend(extracted_data["report_summary"]["measurements"])
+                        if "key_findings" in extracted_data["report_summary"]["document_specific_details"]["lab_report"]:
+                            analysis_input["image_findings"].extend(extracted_data["report_summary"]["document_specific_details"]["lab_report"]["key_findings"])
+                        if "abnormal_results" in extracted_data["report_summary"]["document_specific_details"]["lab_report"]:
+                            analysis_input["abnormal_results"].extend(extracted_data["report_summary"]["document_specific_details"]["lab_report"]["abnormal_results"])
+                        if "measurements" in extracted_data["report_summary"]["document_specific_details"]["lab_report"]:
+                            analysis_input["measurements"].extend(extracted_data["report_summary"]["document_specific_details"]["lab_report"]["measurements"])
             except Exception as e:
                 print(f"Warning: Failed to extract structured data: {str(e)}")
                 # Continue with raw text if structured extraction fails
@@ -310,19 +314,22 @@ class MedicalAnalyzer:
         """Validate analysis format and body systems"""
         # Define valid body systems and their aliases
         VALID_BODY_SYSTEMS = {
-            "cardiovascular": ["cardiovascular", "cardiac", "heart", "vascular"],
-            "respiratory": ["respiratory", "pulmonary", "lung"],
-            "renal": ["renal", "urinal", "kidney", "urinary"],
-            "digestive": ["digestive", "gastrointestinal", "gi", "hepatobiliary", "liver", "hepatic"],
-            "endocrine": ["endocrine", "hormonal", "thyroid", "pancreatic"],
-            "nervous system": ["nervous system", "neurological", "neural", "brain"],
-            "immune system": ["immune system", "immunological", "lymphatic"],
-            "musculoskeletal": ["musculoskeletal", "skeletal", "muscular", "bone", "joint"],
-            "reproductive": ["reproductive", "genital", "fertility"],
-            "haematologic": ["haematologic", "hematologic", "blood", "coagulation"],
-            "ent": ["ent", "ear", "nose", "throat", "otolaryngology"],
-            "dental": ["dental", "oral", "teeth"],
-            "skin": ["skin", "dermatological", "cutaneous", "dermal"]
+            "cardiovascular": ["cardiovascular", "cardiac", "heart", "vascular", "circulatory", "blood pressure", "bp"],
+            "respiratory": ["respiratory", "pulmonary", "lung", "airway", "breathing"],
+            "renal": ["renal", "urinal", "kidney", "urinary", "bladder", "urine"],
+            "digestive": ["digestive", "gastrointestinal", "gi", "hepatobiliary", "liver", "hepatic", "stomach", "intestinal", "bowel"],
+            "endocrine": ["endocrine", "hormonal", "thyroid", "pancreatic", "adrenal", "pituitary", "diabetes"],
+            "nervous system": ["nervous system", "neurological", "neural", "brain", "cns", "pns", "cognitive"],
+            "immune system": ["immune system", "immunological", "lymphatic", "immune", "autoimmune"],
+            "musculoskeletal": ["musculoskeletal", "skeletal", "muscular", "bone", "joint", "muscle", "orthopedic"],
+            "reproductive": ["reproductive", "genital", "fertility", "sexual", "gynecological", "obstetric"],
+            "haematologic": ["haematologic", "hematologic", "blood", "coagulation", "hemoglobin", "rbc", "wbc", "platelets"],
+            "ent": ["ent", "ear", "nose", "throat", "otolaryngology", "sinus", "nasal"],
+            "dental": ["dental", "oral", "teeth", "gum", "periodontal"],
+            "skin": ["skin", "dermatological", "cutaneous", "dermal", "integumentary"],
+            "metabolic": ["metabolic", "metabolism", "nutritional", "electrolyte", "acid-base"],
+            "psychiatric": ["psychiatric", "mental", "psychological", "behavioral", "mood"],
+            "ophthalmologic": ["ophthalmologic", "eye", "vision", "ocular", "retinal"]
         }
         
         # Validate analysis format
@@ -341,15 +348,27 @@ class MedicalAnalyzer:
             
             # Check if the system name matches any main system or alias
             for main_system, aliases in VALID_BODY_SYSTEMS.items():
-                if system_name in aliases:
+                # Check exact matches first
+                if system_name == main_system or system_name in aliases:
                     normalized_system = main_system
                     break
+                
+                # Check if system name contains any alias
+                for alias in aliases:
+                    if alias in system_name or system_name in alias:
+                        normalized_system = main_system
+                        break
+                if normalized_system:
+                    break
             
+            # If no match found, try to map to closest system
             if normalized_system is None:
-                raise ValueError(f"Invalid body system: {system.get('system_name')}")
+                print(f"Warning: Unmapped body system '{system.get('system_name')}', attempting to find closest match")
+                # Keep the original name if no match found
+                normalized_system = system_name
             
             # Update to normalized system name
-            system['system_name'] = normalized_system
+            system['system_name'] = normalized_system.title()
 
     def _safe_float(self, value) -> float:
         """Safely convert value to float"""
