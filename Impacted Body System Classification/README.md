@@ -52,7 +52,7 @@ streamlit run app.py
 - `OPENAI_API_KEY`: Your OpenAI API key
 - `TESSERACT_PATH`: Path to Tesseract OCR installation (optional)
 
-## Output Screen
+## Output Screens
 ![image](https://github.com/user-attachments/assets/ee8f0ec5-5d37-482e-bb0f-654c97e853d5) ![image](https://github.com/user-attachments/assets/60179651-37ca-46e4-8396-1990c1d07425)
 
 
