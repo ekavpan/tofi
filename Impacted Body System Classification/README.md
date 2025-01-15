@@ -53,6 +53,6 @@ streamlit run app.py
 - `TESSERACT_PATH`: Path to Tesseract OCR installation (optional)
 
 ## Output Screen
-![image](https://github.com/user-attachments/assets/624be38e-c4f0-4e00-adf1-871fc75887e5)
-![image](https://github.com/user-attachments/assets/63ac17f4-020f-4459-90aa-88daa7078a3c)
+![image](https://github.com/user-attachments/assets/ee8f0ec5-5d37-482e-bb0f-654c97e853d5) ![image](https://github.com/user-attachments/assets/60179651-37ca-46e4-8396-1990c1d07425)
+
 
