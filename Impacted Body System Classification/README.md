@@ -54,7 +54,7 @@ streamlit run app.py
 
 ## Output Screens
 ![image](https://github.com/user-attachments/assets/ee8f0ec5-5d37-482e-bb0f-654c97e853d5) ![image](https://github.com/user-attachments/assets/60179651-37ca-46e4-8396-1990c1d07425)
-![image](https://github.com/user-attachments/assets/f7a346bb-9206-43cf-ad94-444694570c00) ![image](https://github.com/user-attachments/assets/5d91d40e-889b-4402-b7eb-d1d600522f1e)
+![image](https://github.com/user-attachments/assets/58c1db01-d68b-4394-8a97-254eb30d1880) ![image](https://github.com/user-attachments/assets/5d91d40e-889b-4402-b7eb-d1d600522f1e)
 
 
 
