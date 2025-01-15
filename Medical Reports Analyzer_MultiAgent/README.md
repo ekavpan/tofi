@@ -97,20 +97,11 @@ medical-analyzer-multiagent/
    - Provides actionable recommendations
    - Includes follow-up timeline
 
-## Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+## Output 
+![image](https://github.com/user-attachments/assets/0c46fb32-3aa4-4fff-936f-a55a1c150b45)
+![image](https://github.com/user-attachments/assets/c3aba139-9207-4787-b8ef-97d7c531dfa5)
 
-## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Acknowledgments
 
-- OpenAI for providing the language model capabilities
-- CrewAI for the multi-agent framework
-- Streamlit for the web interface framework
