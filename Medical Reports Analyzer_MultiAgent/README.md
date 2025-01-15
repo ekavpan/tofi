@@ -98,7 +98,7 @@ medical-analyzer-multiagent/
    - Includes follow-up timeline
 
 
-## Output 
+## Output Screens
 ![image](https://github.com/user-attachments/assets/0c46fb32-3aa4-4fff-936f-a55a1c150b45)
 ![image](https://github.com/user-attachments/assets/c3aba139-9207-4787-b8ef-97d7c531dfa5)
 
