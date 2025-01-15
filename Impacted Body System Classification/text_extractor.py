@@ -10,7 +10,14 @@ from striprtf.striprtf import rtf_to_text
 import platform
 import subprocess
 import pdf2image
-import fitz
+
+# Try to import PyMuPDF, but don't fail if it's not available
+try:
+    import fitz
+    PYMUPDF_AVAILABLE = True
+except ImportError:
+    PYMUPDF_AVAILABLE = False
+    print("PyMuPDF not available. PDF extraction will use pdfplumber only.")
 
 class TextExtractor:
     def __init__(self):
@@ -157,7 +164,7 @@ To install Tesseract OCR:
                 print(f"pdfplumber extraction failed: {str(e)}")
 
             # Method 2: Try PyMuPDF if pdfplumber didn't get anything
-            if not all_text:
+            if not all_text and PYMUPDF_AVAILABLE:
                 try:
                     print("\nAttempting extraction with PyMuPDF...")
                     with fitz.open(pdf_path) as doc:
