@@ -78,19 +78,38 @@ class MedicalAnalyzer:
                     messages=[
                         {"role": "system", "content": self.analysis_prompt},
                         {"role": "user", "content": (
-                            "Analyze the health data comprehensively. Consider ALL possible body systems that might be affected, "
-                            "both directly and indirectly. Include both primary and secondary impacts. "
-                            f"Data: {json.dumps(analysis_input)}"
+                            "Analyze these abnormal test results and show ALL impacted body systems. "
+                            "For each abnormal result, show both direct impacts (primary system) and indirect impacts (related systems). "
+                            "Example: High blood sugar affects: Endocrine (primary), Cardiovascular, Renal, Nervous (secondary). "
+                            f"Abnormal Results: {json.dumps(analysis_input.get('abnormal_results', []))}\n\n"
+                            f"Full Data: {json.dumps(analysis_input)}"
                         )}
                     ],
-                    temperature=0.2,
-                    max_tokens=2000
+                    temperature=0.1
                 )
                 
                 analysis = json.loads(response.choices[0].message.content)
                 
-                # Validate analysis format and body systems
-                self._validate_analysis(analysis)
+                # Additional validation to ensure no systems are shown for normal results
+                if "impacted_systems" in analysis:
+                    abnormal_test_names = {
+                        str(result.get("test_name", "")).lower() 
+                        for result in analysis_input.get("abnormal_results", [])
+                    }
+                    
+                    # Filter out any systems that don't correspond to abnormal results
+                    filtered_systems = []
+                    for system in analysis["impacted_systems"]:
+                        findings = system.get("findings", [])
+                        # Keep systems if they have findings from abnormal tests
+                        if any(
+                            test_name in str(finding).lower()
+                            for test_name in abnormal_test_names
+                            for finding in findings
+                        ):
+                            filtered_systems.append(system)
+                    
+                    analysis["impacted_systems"] = filtered_systems
                 
                 return analysis
                 
@@ -98,13 +117,9 @@ class MedicalAnalyzer:
                 raise Exception("Failed to parse OpenAI response as JSON")
             except Exception as e:
                 if "api_key" in str(e).lower():
-                    raise Exception(
-                        "Invalid OpenAI API key. Please check your API key in the .env file."
-                    )
+                    raise Exception("Invalid OpenAI API key. Please check your API key in the .env file.")
                 elif "connection" in str(e).lower():
-                    raise Exception(
-                        "Connection error. Please check your internet connection and try again."
-                    )
+                    raise Exception("Connection error. Please check your internet connection and try again.")
                 else:
                     raise Exception(f"OpenAI API error: {str(e)}")
                 
@@ -161,10 +176,6 @@ class MedicalAnalyzer:
     def analyze_image(self, image_text: str, image_type: str) -> Dict:
         """Analyze medical image data"""
         try:
-            # Log received data
-            print(f"Analyzing {image_type} image")
-            print(f"Extracted text length: {len(image_text) if image_text else 0}")
-
             # Prepare image analysis input
             analysis_input = {
                 "image_findings": [],
@@ -188,15 +199,12 @@ class MedicalAnalyzer:
                         if "measurements" in extracted_data["report_summary"]["document_specific_details"]["lab_report"]:
                             analysis_input["measurements"].extend(extracted_data["report_summary"]["document_specific_details"]["lab_report"]["measurements"])
             except Exception as e:
-                print(f"Warning: Failed to extract structured data: {str(e)}")
                 # Continue with raw text if structured extraction fails
                 pass
 
             # If no structured findings, use the raw text
             if not analysis_input["image_findings"] and image_text:
                 analysis_input["image_findings"] = [{"finding": image_text}]
-
-            print("Prepared analysis input:", json.dumps(analysis_input, indent=2))
 
             # Get LLM analysis
             try:
@@ -215,7 +223,6 @@ class MedicalAnalyzer:
                 )
                 
                 analysis = json.loads(response.choices[0].message.content)
-                print("Received analysis:", json.dumps(analysis, indent=2))
                 
                 # Validate analysis format and body systems
                 self._validate_analysis(analysis)
@@ -223,9 +230,7 @@ class MedicalAnalyzer:
                 return analysis
                 
             except json.JSONDecodeError as e:
-                print(f"Failed to parse OpenAI response: {str(e)}")
-                print("Raw response:", response.choices[0].message.content)
-                raise Exception("Failed to parse analysis results")
+                raise Exception("Failed to parse OpenAI response as JSON")
             except Exception as e:
                 if "api_key" in str(e).lower():
                     raise Exception(
@@ -236,11 +241,9 @@ class MedicalAnalyzer:
                         "Connection error. Please check your internet connection and try again."
                     )
                 else:
-                    print(f"OpenAI API error: {str(e)}")
                     raise Exception(f"OpenAI API error: {str(e)}")
                 
         except Exception as e:
-            print(f"Image analysis failed: {str(e)}")
             raise Exception(f"Image analysis failed: {str(e)}")
 
     def _prepare_analysis_input(self, data: Dict) -> Dict:
@@ -363,7 +366,6 @@ class MedicalAnalyzer:
             
             # If no match found, try to map to closest system
             if normalized_system is None:
-                print(f"Warning: Unmapped body system '{system.get('system_name')}', attempting to find closest match")
                 # Keep the original name if no match found
                 normalized_system = system_name
             

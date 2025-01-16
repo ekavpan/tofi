@@ -122,124 +122,101 @@ To install Tesseract OCR:
     def extract_from_pdf(self, pdf_path: str) -> str:
         """Extract text from a PDF file with enhanced structure preservation"""
         try:
-            all_text = []
             print(f"\nAttempting to extract text from PDF: {pdf_path}")
+            all_text = []
             
-            # Method 1: Try pdfplumber with table extraction
+            # Method 1: Try pdfplumber first for better table extraction
             try:
                 print("Attempting extraction with pdfplumber...")
                 with pdfplumber.open(pdf_path) as pdf:
+                    print(f"PDF has {len(pdf.pages)} pages")
+                    
                     for page_num, page in enumerate(pdf.pages, 1):
-                        print(f"Processing page {page_num}")
+                        print(f"\nProcessing page {page_num}")
+                        page_text = []
                         
-                        # Try to extract tables first
+                        # First try to get raw text with layout preservation
+                        text = page.extract_text(layout=True)
+                        if text:
+                            # Process text line by line
+                            for line in text.split('\n'):
+                                line = line.strip()
+                                if line:
+                                    # Keep lines with test results or important headers
+                                    if any(c.isdigit() for c in line) or \
+                                       any(keyword in line.upper() for keyword in ['TEST', 'RESULT', 'NAME', 'VALUE', 'UNIT', 'NORMAL', 'REFERENCE', 'RANGE']):
+                                        page_text.append(line)
+                                    # Keep other informative lines
+                                    elif len(line) > 3 and not all(c in '.-_|\\/' for c in line):
+                                        page_text.append(line)
+                        
+                        # Then try to extract tables
                         tables = page.extract_tables()
                         if tables:
                             print(f"Found {len(tables)} tables on page {page_num}")
                             for table in tables:
-                                # Convert table to formatted text
-                                table_text = []
+                                # Process each row in the table
                                 for row in table:
-                                    # Clean and filter row data
-                                    cleaned_row = [
-                                        str(cell).strip() if cell is not None else ''
-                                        for cell in row
-                                    ]
-                                    # Only add non-empty rows
-                                    if any(cleaned_row):
-                                        table_text.append('\t'.join(cleaned_row))
-                                if table_text:
-                                    all_text.append('\n'.join(table_text))
-                                    all_text.append('\n')  # Add separator between tables
+                                    # Clean and join cells, preserving structure
+                                    row_text = []
+                                    for cell in row:
+                                        if cell is not None:
+                                            cell_text = str(cell).strip()
+                                            if cell_text:
+                                                # Always keep cells with numbers or units
+                                                if any(c.isdigit() for c in cell_text) or \
+                                                   any(unit in cell_text.upper() for unit in ['MG', 'G', 'ML', 'L', 'MMOL', 'UNITS']):
+                                                    row_text.append(cell_text)
+                                                # Keep other non-empty cells
+                                                elif len(cell_text) > 1:
+                                                    row_text.append(cell_text)
+                                    if row_text:
+                                        line = " | ".join(row_text)
+                                        if line not in page_text:  # Avoid duplicates
+                                            page_text.append(line)
                         
-                        # Extract regular text
-                        text = page.extract_text(layout=True)  # Use layout mode
-                        if text:
-                            print(f"Extracted regular text from page {page_num}")
-                            # Preserve line breaks and spacing
-                            all_text.append(text)
-                        else:
-                            print(f"No regular text found on page {page_num}")
+                        # Add page separator and page text
+                        if page_text:
+                            all_text.extend([f"\n=== Page {page_num} ===\n"])
+                            all_text.extend(page_text)
+                            print(f"Extracted {len(page_text)} lines from page {page_num}")
+                    
+                    if all_text:
+                        # Post-process extracted text
+                        seen = set()
+                        final_lines = []
+                        current_section = None
+                        
+                        for line in all_text:
+                            line = line.strip()
+                            if not line or (line in seen and not line.startswith("===")):
+                                continue
+                            
+                            if not line.startswith("==="):
+                                seen.add(line)
+                            
+                            # Add section headers
+                            if line.isupper() and len(line) > 3 and not line.startswith("==="):
+                                if current_section != line:
+                                    current_section = line
+                                    final_lines.extend(['', line, '-' * len(line)])
+                            # Add test results and other content
+                            else:
+                                final_lines.append(line)
+                        
+                        final_text = '\n'.join(final_lines)
+                        print("\nExtracted text preview:")
+                        print("First 200 chars:", final_text[:200])
+                        print("Last 200 chars:", final_text[-200:])
+                        return final_text
+                
             except Exception as e:
                 print(f"pdfplumber extraction failed: {str(e)}")
-
-            # Method 2: Try PyMuPDF if pdfplumber didn't get anything
-            if not all_text and PYMUPDF_AVAILABLE:
-                try:
-                    print("\nAttempting extraction with PyMuPDF...")
-                    with fitz.open(pdf_path) as doc:
-                        for page_num, page in enumerate(doc, 1):
-                            # Extract text with more details
-                            text = page.get_text("dict")  # Get detailed text information
-                            if text.get("blocks"):
-                                print(f"Found structured text blocks on page {page_num}")
-                                page_text = []
-                                for block in text["blocks"]:
-                                    if "lines" in block:
-                                        for line in block["lines"]:
-                                            if "spans" in line:
-                                                line_text = []
-                                                for span in line["spans"]:
-                                                    if "text" in span:
-                                                        line_text.append(span["text"])
-                                                if line_text:
-                                                    page_text.append(" ".join(line_text))
-                                if page_text:
-                                    all_text.append("\n".join(page_text))
-                            else:
-                                print(f"No structured text found on page {page_num}")
-                except Exception as e:
-                    print(f"PyMuPDF extraction failed: {str(e)}")
-
-            # Method 3: Use pdf2image + OCR as last resort
-            if not all_text:
-                try:
-                    print("\nAttempting extraction with pdf2image + OCR...")
-                    images = pdf2image.convert_from_path(pdf_path)
-                    print(f"Successfully converted PDF to {len(images)} images")
-                    
-                    for i, image in enumerate(images, 1):
-                        print(f"Processing page {i} with OCR...")
-                        # Convert PIL image to OpenCV format
-                        cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-                        
-                        # Preprocess the image
-                        processed_image = self.preprocess_image(cv_image)
-                        
-                        # Convert back to PIL Image
-                        pil_image = Image.fromarray(processed_image)
-                        
-                        # Use Tesseract with specific configuration for structured data
-                        text = pytesseract.image_to_string(
-                            pil_image,
-                            config='--psm 6 --oem 3 -c preserve_interword_spaces=1'
-                        )
-                        if text:
-                            print(f"Successfully extracted text from page {i}")
-                            all_text.append(text)
-                        else:
-                            print(f"No text found on page {i}")
-                except Exception as e:
-                    print(f"OCR extraction failed: {str(e)}")
-
-            # Combine all extracted text while preserving structure
-            final_text = '\n\n'.join(all_text)
+                raise
             
-            if not final_text.strip():
-                print("\nNo text could be extracted using any method")
-                raise Exception(
-                    "No text could be extracted from the PDF. The file might be:"
-                    "\n1. Password protected"
-                    "\n2. Scanned with poor quality"
-                    "\n3. Contains only images"
-                    "\n4. Corrupted"
-                )
-
-            print(f"\nSuccessfully extracted {len(final_text)} characters of text")
-            return final_text
-
         except Exception as e:
-            raise Exception(f"Error extracting text from PDF: {str(e)}")
+            print(f"Error extracting text from PDF: {str(e)}")
+            raise
 
     def extract_from_image(self, image_path: str) -> str:
         """Extract text from an image using OCR"""
@@ -279,92 +256,34 @@ To install Tesseract OCR:
             raise Exception(f"Error extracting text from image: {str(e)}")
 
     def extract_text(self, file_path: str) -> str:
-        """Extract text from various file types"""
+        """Extract text from various file types with improved handling"""
         try:
-            # Test Tesseract before proceeding
-            if not self.test_tesseract():
-                raise Exception(
-                    "Tesseract is not working properly. Please ensure it's installed correctly:\n"
-                    "1. Check if Tesseract is installed in C:\\Program Files\\Tesseract-OCR\\\n"
-                    "2. If installed elsewhere, set the TESSERACT_PATH environment variable\n"
-                    "3. Restart the application"
-                )
-
             # Get file extension
             _, ext = os.path.splitext(file_path)
             ext = ext.lower()
-
-            # For image files
-            if ext in ['.png', '.jpg', '.jpeg', '.tiff', '.bmp']:
-                # Read image using OpenCV
-                image = cv2.imread(file_path)
-                if image is None:
-                    raise Exception("Failed to read image file")
-
-                # Preprocess the image
-                processed_image = self.preprocess_image(image)
-
-                # Save preprocessed image temporarily
-                temp_path = file_path + "_processed.png"
-                cv2.imwrite(temp_path, processed_image)
-
-                try:
-                    # Extract text using Tesseract
-                    text = pytesseract.image_to_string(
-                        Image.open(temp_path),
-                        config='--psm 6'  # Assume uniform block of text
-                    )
-                finally:
-                    # Clean up temporary file
-                    if os.path.exists(temp_path):
-                        os.remove(temp_path)
-
-                if not text.strip():
-                    raise Exception(
-                        "No text was extracted from the image. This could be because:\n"
-                        "1. The image doesn't contain text\n"
-                        "2. The text is not clear enough\n"
-                        "3. The image format is not supported\n"
-                        "Please try uploading a clearer image or a different format."
-                    )
-
-                return text
-
-            # For PDFs
-            elif ext == '.pdf':
-                # Convert PDF to images
-                images = pdf2image.convert_from_path(file_path)
-                text = []
-                
-                # Extract text from each page
-                for image in images:
-                    # Convert PIL image to OpenCV format
-                    cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-                    
-                    # Preprocess the image
-                    processed_image = self.preprocess_image(cv_image)
-                    
-                    # Extract text
-                    page_text = pytesseract.image_to_string(
-                        Image.fromarray(processed_image),
-                        config='--psm 6'
-                    )
-                    text.append(page_text)
-                
-                return '\n'.join(text)
-
-            # For text files
-            elif ext in ['.txt', '.doc', '.docx', '.rtf']:
-                with open(file_path, 'r', encoding='utf-8') as file:
-                    return file.read()
-
+            
+            if ext == '.pdf':
+                return self.extract_from_pdf(file_path)
+            elif ext == '.txt':
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    return f.read().strip()
+            elif ext == '.docx':
+                doc = Document(file_path)
+                return '\n'.join([paragraph.text for paragraph in doc.paragraphs])
+            elif ext in ['.png', '.jpg', '.jpeg', '.tiff', '.bmp']:
+                return self.extract_from_image(file_path)
             else:
-                raise Exception(f"Unsupported file type: {ext}")
-
+                raise ValueError(f"Unsupported file format: {ext}")
+                
+        except UnicodeDecodeError:
+            # Try alternative encoding
+            try:
+                with open(file_path, 'r', encoding='latin-1') as f:
+                    return f.read().strip()
+            except Exception as e:
+                raise ValueError(f"Error reading file with alternative encoding: {str(e)}")
         except Exception as e:
-            if "No text was extracted" in str(e):
-                raise
-            raise Exception(f"Error extracting text from file: {str(e)}")
+            raise ValueError(f"Error extracting text from file: {str(e)}")
 
     def extract_from_text_file(self, file_path: str) -> str:
         """Extract text from text-based files"""
